@@ -1,12 +1,12 @@
 //wifi INSERT YOUR SSID AND PASSWORD
 #include <WiFi.h>
-const char* ssid     = "Project Glitch"; 
-const char* password = "MTOBEIYF";
+const char* ssid     = "YOUR SSID"; 
+const char* password = "YOUR PASSWORD";
 WiFiServer server(80);
 int Initialised=false;
 unsigned long currentTime = millis();
 unsigned long previousTime = 0; 
-const long timeoutTime = 2000;
+const long timeoutTime = 500;
 
 #define PWM_CH1   2
 #define PWM_CH2   3
@@ -115,8 +115,8 @@ void Brake(){
 }
 
 void Forward(){
-  ledcWrite(PWM_CH1, 170);
-  ledcWrite(PWM_CH4, 150);
+  ledcWrite(PWM_CH1, 150);
+  ledcWrite(PWM_CH4, 130);
 }
 
 void Backward(){
@@ -183,7 +183,6 @@ void setup() {
 }
 void loop() {
   // put your main code here, to run repeatedly:
-  //ESC.write(0);
   WiFiClient client= server.available();
   if (client) {
     currentTime = millis();
@@ -218,7 +217,7 @@ void loop() {
               client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}</style></head>");
               client.println("<p><a href=\"/STOP\"><button class=\"button2\">STOP</button></a></p>");
             }
-          client.println();
+            client.println();
             break;
           } else{
             Currentline="";
@@ -248,19 +247,6 @@ void loop() {
         
       }
     }
-    /*if (Initialised==true){
-      Forward();
-      ESC.write(60);
-      ESC.write(70);
-      UltrasoundL();
-      UltrasoundR();
-      IRdetect();
-      if (UltrasoundLvalue==1||UltrasoundRvalue==1||IRVLvalue==1 || IRVRvalue==1){
-        Brake();
-        Backward();
-        randomiser();
-              }
-            }*/
     client.stop();
   }
   if (Initialised==true){
@@ -277,3 +263,4 @@ void loop() {
   }
   }
 }
+
