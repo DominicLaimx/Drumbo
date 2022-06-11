@@ -80,8 +80,9 @@ void EdgeCheck(){
         delay(500);
         Right();
         delay(500);
-        Backward();
-        delay(500);
+        Forward();
+        delay(1000);
+        Brake();
         Right();
         PrevTurn = 0;
     }
@@ -90,8 +91,9 @@ void EdgeCheck(){
         delay(500);
         Left();
         delay(500);
-        Backward();
-        delay(500);
+        Forward();
+        delay(1000);
+        Brake();
         Left();
         PrevTurn = 1;
       }
@@ -279,10 +281,10 @@ void loop() {
   // put your main code here, to run repeatedly:
   Forward();
   IRdetect();
+  EdgeCheck();
   UltrasoundL();
   UltrasoundR();
   ObstacleCheck();
-  EdgeCheck();
-  delay(500);
+  delay(100);
   
 }
