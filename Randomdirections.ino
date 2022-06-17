@@ -81,7 +81,6 @@ void UltrasoundL(){
   duration = pulseIn(EchoPinL, HIGH);
   distance = (duration*.0343)/2;
   delay(100);
-  Serial.println("UltrasoundL distance = "+ String(distance));
   if (distance <25){  
     UltrasoundLvalue = 1;
         }
@@ -99,7 +98,7 @@ void UltrasoundR(){
   distance = (duration*.0343)/2;
   delay(100);
   Serial.println("UltrasoundR distance = "+ String(distance));
-  if (distance <20){  
+  if (distance <25){  
     UltrasoundRvalue = 1;
         }
   else{
@@ -115,7 +114,7 @@ void Brake(){
 }
 
 void Forward(){
-  ledcWrite(PWM_CH1, 150);
+  ledcWrite(PWM_CH1, 130);
   ledcWrite(PWM_CH4, 130);
 }
 
@@ -156,17 +155,17 @@ void setup() {
   pinMode(Motor2_IN1, OUTPUT);
   pinMode(Motor2_IN2, OUTPUT);
 
-  pinMode(TrigPinL, OUTPUT);
-  pinMode(EchoPinL, INPUT);
-  pinMode(TrigPinR, OUTPUT);
-  pinMode(EchoPinR, INPUT);
-
   pinMode(IRHL, INPUT);
   pinMode(IRHR, INPUT);
   pinMode(IRVL, INPUT);
   pinMode(IRVR, INPUT);
   pinMode(IRB, INPUT);
   
+  pinMode(TrigPinL, OUTPUT);
+  pinMode(EchoPinL, INPUT);
+  pinMode(TrigPinR, OUTPUT);
+  pinMode(EchoPinR, INPUT);
+
   ledcAttachPin(Motor1_IN1, PWM_CH1);
   ledcSetup(PWM_CH1, PWM_Freq, PWM_Res );
   ledcAttachPin(Motor1_IN2, PWM_CH2);
