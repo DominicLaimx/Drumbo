@@ -274,12 +274,13 @@ void setup() {
 
   ESC.attach(22,1000,2000);
   ESC.write(0);
-  delay(1000);
+  delay(5000); // delay before starting
   
 }
 void loop() {
   // put your main code here, to run repeatedly:
   Forward();
+  ESC.write(70);
   IRdetect();
   EdgeCheck();
   UltrasoundL();
