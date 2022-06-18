@@ -303,6 +303,11 @@ void loop() {
       currentTime = millis();
       if (client.available()) {
         char c = client.read();
+        
+        if (c != '\n' && c != '\r') {
+          Currentline += c;
+        }
+        
         if (c == '\n') { 
           if (Currentline.length() == 0) {
             client.println("HTTP/1.1 200 OK");
@@ -332,9 +337,7 @@ void loop() {
           } else{
               Currentline="";
             } 
-         } else if (c !='\r'){
-             Currentline+=c;
-          }
+         }
           if (Currentline.endsWith("GET /START")){
             Initialised=true;
             Forward();
