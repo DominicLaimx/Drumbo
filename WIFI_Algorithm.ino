@@ -6,7 +6,7 @@ WiFiServer server(80);
 int Initialised=false;
 unsigned long currentTime = millis();
 unsigned long previousTime = 0; 
-const long timeoutTime = 500;
+const long timeoutTime = 1000;
 
 #define PWM_CH1   2
 #define PWM_CH2   3
@@ -63,7 +63,7 @@ void UltrasoundL(){
   digitalWrite(TrigPinL, LOW);
   duration = pulseIn(EchoPinL, HIGH);
   distance = (duration*.0343)/2;
-  if (distance <16){  
+  if (distance <15){  
     UltrasoundLvalue = 1;
         }
   else{
@@ -78,7 +78,7 @@ void UltrasoundR(){
   digitalWrite(TrigPinR, LOW);
   duration = pulseIn(EchoPinR, HIGH);
   distance = (duration*.0343)/2;
-  if (distance <16){  
+  if (distance <15){  
     UltrasoundRvalue = 1;
         }
   else{
@@ -163,6 +163,7 @@ void ObstacleCheck(){
       delay(MoveTime);
       Brake();
       Left();
+      Forward();
     }
    if (PrevTurn == 0) {
       Right();
@@ -211,6 +212,7 @@ void ObstacleCheck(){
       delay(MoveTime);
       Brake();
       Right();
+      Forward();
       }
     }
   }
@@ -224,8 +226,8 @@ void Brake(){
 }
 
 void Forward(){
-  ledcWrite(PWM_CH1, 130);
-  ledcWrite(PWM_CH4, 130);
+  ledcWrite(PWM_CH1, 135);//right
+  ledcWrite(PWM_CH4, 130);//left
 }
 
 void Backward(){
@@ -245,13 +247,13 @@ void Backward(){
 void Right() {
   ledcWrite(PWM_CH2, 100);
   ledcWrite(PWM_CH4, 100);
-  delay(1500);
+  delay(1300);
   Brake();
 }
 void Left(){
   ledcWrite(PWM_CH1, 100);
   ledcWrite(PWM_CH3, 100);
-  delay(1500);
+  delay(1300);
   Brake();
 }
 
@@ -298,15 +300,11 @@ void loop() {
     currentTime = millis();
     previousTime = currentTime;
     String Currentline ="";
-    //send a HTTP request based on timeoutTime
     while (client.connected()&& currentTime - previousTime <= timeoutTime) { 
+    //while (client.connected()) {
       currentTime = millis();
       if (client.available()) {
         char c = client.read();
-        
-        if (c != '\n' && c != '\r') {
-          Currentline += c;
-        }
         
         if (c == '\n') { 
           if (Currentline.length() == 0) {
@@ -337,17 +335,15 @@ void loop() {
           } else{
               Currentline="";
             } 
-         }
+         }else if (c !='\r'){
+            Currentline+=c;
+          }
+          
           if (Currentline.endsWith("GET /START")){
             Initialised=true;
             Forward();
             ESC.write(70);
-            IRdetect();
-            EdgeCheck();
-            UltrasoundL();
-            UltrasoundR();
-            ObstacleCheck();
-          }
+            }
           if (Currentline.endsWith("GET /STOP")){
             Initialised=false;
             Brake();
@@ -357,6 +353,7 @@ void loop() {
     }
     client.stop();
   }
+  
   if (Initialised==true){
     Forward();
     ESC.write(70);
@@ -365,5 +362,10 @@ void loop() {
     UltrasoundL();
     UltrasoundR();
     ObstacleCheck();
+    Forward();
+  }
+  else{
+    Brake();
+    ESC.write(0);
   }
 }
