@@ -6,7 +6,7 @@ WiFiServer server(80);
 int Initialised=false;
 unsigned long currentTime = millis();
 unsigned long previousTime = 0; 
-const long timeoutTime = 500;
+const long timeoutTime = 1000;
 
 #define PWM_CH1   2
 #define PWM_CH2   3
@@ -81,7 +81,7 @@ void UltrasoundL(){
   duration = pulseIn(EchoPinL, HIGH);
   distance = (duration*.0343)/2;
   delay(100);
-  if (distance <25){  
+  if (distance <20){  
     UltrasoundLvalue = 1;
         }
   else{
@@ -97,8 +97,7 @@ void UltrasoundR(){
   duration = pulseIn(EchoPinR, HIGH);
   distance = (duration*.0343)/2;
   delay(100);
-  Serial.println("UltrasoundR distance = "+ String(distance));
-  if (distance <25){  
+  if (distance <20){  
     UltrasoundRvalue = 1;
         }
   else{
@@ -114,8 +113,8 @@ void Brake(){
 }
 
 void Forward(){
-  ledcWrite(PWM_CH1, 130);
-  ledcWrite(PWM_CH4, 130);
+  ledcWrite(PWM_CH1, 135); //right
+  ledcWrite(PWM_CH4, 130); //left
 }
 
 void Backward(){
@@ -146,7 +145,7 @@ void Left(int Timer){
 }
 
 void setup() {
-
+  
   WiFi.begin(ssid, password);
   server.begin();
 
@@ -187,8 +186,9 @@ void loop() {
     currentTime = millis();
     previousTime = currentTime;
     String Currentline ="";
-    //send a HTTP request based on timeoutTime
-    while (client.connected()&& currentTime - previousTime <= timeoutTime) { 
+    //disconnect client after timeouttime
+    while (client.connected()&& currentTime - previousTime <= timeoutTime) {
+    //while (client.connected()) { 
       currentTime = millis();
       if (client.available()) {
         char c = client.read();
@@ -227,16 +227,7 @@ void loop() {
           if (Currentline.endsWith("GET /START")){
             Initialised=true;
             Forward();
-            ESC.write(60);
             ESC.write(70);
-            UltrasoundL();
-            UltrasoundR();
-            IRdetect();
-            if (UltrasoundLvalue==1||UltrasoundRvalue==1||IRVLvalue==1 || IRVRvalue==1){
-              Brake();
-              Backward();
-              randomiser();
-            }
           }
           if (Currentline.endsWith("GET /STOP")){
             Initialised=false;
@@ -250,7 +241,6 @@ void loop() {
   }
   if (Initialised==true){
     Forward();
-    ESC.write(60);
     ESC.write(70);
     UltrasoundL();
     UltrasoundR();
@@ -260,6 +250,10 @@ void loop() {
       Backward();
       randomiser();
   }
+  }
+  else{
+    Brake();
+    ESC.write(0);
   }
 }
 
